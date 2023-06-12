@@ -9,6 +9,6 @@ public class OrderUpdateInput {
 	@NotNull
 	private int id;
 	private String orderNo;
-	private String itemId;
+	private Integer itemId;
 	private Integer qty;
 }

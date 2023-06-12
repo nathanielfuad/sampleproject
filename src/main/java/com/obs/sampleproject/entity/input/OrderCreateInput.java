@@ -9,7 +9,7 @@ public class OrderCreateInput {
 	@NotNull
 	private String orderNo;
 	@NotNull
-	private String itemId;
+	private Integer itemId;
 	@NotNull
 	private Integer qty;
 }

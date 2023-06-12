@@ -18,7 +18,7 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String orderNo;
-	private String itemId;
+	private Integer itemId;
 	private Integer qty;
 
 }
