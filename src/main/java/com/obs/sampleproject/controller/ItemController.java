@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.obs.sampleproject.constants.ErrorCode;
 import com.obs.sampleproject.entity.input.ItemCreateInput;
 import com.obs.sampleproject.entity.input.ItemUpdateInput;
 import com.obs.sampleproject.entity.model.Item;
@@ -31,7 +32,7 @@ public class ItemController {
 	@GetMapping
 	public Response<List<Item>> getAll(){
 		Response<List<Item>> response = new Response<List<Item>>();
-		response.setErrorCode("0");
+		response.setErrorCode(ErrorCode.SUCCESS);
 		response.setOutput(itemService.getAllItem());
 		return response;
 	}
@@ -41,10 +42,10 @@ public class ItemController {
 		Response<Item> response = new Response<Item>();
 		try {
 			Item item = itemService.saveItem(itemCreateInput);
-			response.setErrorCode("00");
+			response.setErrorCode(ErrorCode.SUCCESS);
 			response.setOutput(item);
 		}catch (Exception e) {
-			response.setErrorCode("01");
+			response.setErrorCode(ErrorCode.GENERAL_ERROR);
 			response.setOutput(null);
 		}
 		
@@ -57,10 +58,10 @@ public class ItemController {
 		Response<Item> response = new Response<Item>();
 		try {
 			Item item = itemService.updateItem(itemUpdateInput);
-			response.setErrorCode("00");
+			response.setErrorCode(ErrorCode.SUCCESS);
 			response.setOutput(item);
 		}catch (Exception e) {
-			response.setErrorCode("01");
+			response.setErrorCode(ErrorCode.GENERAL_ERROR);
 			response.setOutput(null);
 		}
 		
@@ -73,10 +74,10 @@ public class ItemController {
 		Response<Item> response = new Response<Item>();
 		try {
 			Item item = itemService.deleteItem(id);
-			response.setErrorCode("00");
+			response.setErrorCode(ErrorCode.SUCCESS);
 			response.setOutput(item);
 		}catch (Exception e) {
-			response.setErrorCode("01");
+			response.setErrorCode(ErrorCode.GENERAL_ERROR);
 			response.setOutput(null);
 		}
 		

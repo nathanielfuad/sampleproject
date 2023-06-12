@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.obs.sampleproject.constants.ErrorCode;
 import com.obs.sampleproject.entity.input.OrderCreateInput;
 import com.obs.sampleproject.entity.input.OrderUpdateInput;
 import com.obs.sampleproject.entity.model.Order;
@@ -31,7 +32,7 @@ public class OrderController {
 	@GetMapping
 	public Response<List<Order>> getAll(){
 		Response<List<Order>> response = new Response<List<Order>>();
-		response.setErrorCode("0");
+		response.setErrorCode(ErrorCode.SUCCESS);
 		response.setOutput(orderService.getAllOrder());
 		return response;
 	}
@@ -41,10 +42,10 @@ public class OrderController {
 		Response<Order> response = new Response<Order>();
 		try {
 			Order order = orderService.saveOrder(orderCreateInput);
-			response.setErrorCode("00");
+			response.setErrorCode(ErrorCode.SUCCESS);
 			response.setOutput(order);
 		}catch (Exception e) {
-			response.setErrorCode("01");
+			response.setErrorCode(ErrorCode.GENERAL_ERROR);
 			response.setOutput(null);
 		}
 		
@@ -57,10 +58,10 @@ public class OrderController {
 		Response<Order> response = new Response<Order>();
 		try {
 			Order order = orderService.updateOrder(orderUpdateInput);
-			response.setErrorCode("00");
+			response.setErrorCode(ErrorCode.SUCCESS);
 			response.setOutput(order);
 		}catch (Exception e) {
-			response.setErrorCode("01");
+			response.setErrorCode(ErrorCode.GENERAL_ERROR);
 			response.setOutput(null);
 		}
 		
@@ -73,10 +74,10 @@ public class OrderController {
 		Response<Order> response = new Response<Order>();
 		try {
 			Order order = orderService.deleteOrder(id);
-			response.setErrorCode("00");
+			response.setErrorCode(ErrorCode.SUCCESS);
 			response.setOutput(order);
 		}catch (Exception e) {
-			response.setErrorCode("01");
+			response.setErrorCode(ErrorCode.GENERAL_ERROR);
 			response.setOutput(null);
 		}
 		
