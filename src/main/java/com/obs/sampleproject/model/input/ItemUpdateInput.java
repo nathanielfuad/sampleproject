@@ -1,13 +1,13 @@
-package com.obs.sampleproject.entity.input;
+package com.obs.sampleproject.model.input;
 
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
 @Data
-public class ItemCreateInput {
+public class ItemUpdateInput {
 	@NotNull
+	private int id;
 	private String name;
-	@NotNull
 	private Integer price;
 }

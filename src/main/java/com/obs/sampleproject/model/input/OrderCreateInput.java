@@ -1,14 +1,15 @@
-package com.obs.sampleproject.entity.input;
+package com.obs.sampleproject.model.input;
 
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
 @Data
-public class OrderUpdateInput {
+public class OrderCreateInput {
 	@NotNull
-	private int id;
 	private String orderNo;
+	@NotNull
 	private Integer itemId;
+	@NotNull
 	private Integer qty;
 }

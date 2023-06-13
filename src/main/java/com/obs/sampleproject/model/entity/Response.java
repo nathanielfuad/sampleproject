@@ -1,4 +1,4 @@
-package com.obs.sampleproject.entity.model;
+package com.obs.sampleproject.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

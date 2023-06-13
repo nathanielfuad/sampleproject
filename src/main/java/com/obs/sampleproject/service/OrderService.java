@@ -2,18 +2,13 @@ package com.obs.sampleproject.service;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.obs.sampleproject.constants.ErrorCode;
+import com.obs.sampleproject.model.exception.GeneralErrorException;
 import org.springframework.stereotype.Service;
 
-import com.obs.sampleproject.entity.model.Item;
-import com.obs.sampleproject.entity.model.Order;
-import com.obs.sampleproject.entity.input.ItemCreateInput;
-import com.obs.sampleproject.entity.input.ItemUpdateInput;
-import com.obs.sampleproject.entity.input.OrderCreateInput;
-import com.obs.sampleproject.entity.input.OrderUpdateInput;
-import com.obs.sampleproject.repository.ItemRepository;
+import com.obs.sampleproject.model.entity.Order;
+import com.obs.sampleproject.model.input.OrderCreateInput;
+import com.obs.sampleproject.model.input.OrderUpdateInput;
 import com.obs.sampleproject.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-	@Autowired
-	private OrderRepository orderRepository;
+	private final OrderRepository orderRepository;
 	
 	public List<Order> getAllOrder(){
 		return orderRepository.findAll();
@@ -41,10 +35,10 @@ public class OrderService {
 	}
 
 
-	public Order updateOrder(OrderUpdateInput orderUpdateInput) throws Exception {
+	public Order updateOrder(OrderUpdateInput orderUpdateInput) {
 		Order order = getOrder(orderUpdateInput.getId());
 		if(order==null) {
-			throw new Exception();
+			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		if(orderUpdateInput.getItemId() != null) {
 			order.setItemId(orderUpdateInput.getItemId());
@@ -59,10 +53,10 @@ public class OrderService {
 	}
 	
 
-	public Order deleteOrder(Integer id) throws Exception {
+	public Order deleteOrder(Integer id) {
 		Order order = getOrder(id);
 		if(order==null) {
-			throw new Exception();
+			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		orderRepository.delete(order);
 		return order;

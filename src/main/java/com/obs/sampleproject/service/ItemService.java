@@ -2,14 +2,14 @@ package com.obs.sampleproject.service;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
+import com.obs.sampleproject.constants.ErrorCode;
+import com.obs.sampleproject.model.exception.GeneralErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.obs.sampleproject.entity.model.Item;
-import com.obs.sampleproject.entity.input.ItemCreateInput;
-import com.obs.sampleproject.entity.input.ItemUpdateInput;
+import com.obs.sampleproject.model.entity.Item;
+import com.obs.sampleproject.model.input.ItemCreateInput;
+import com.obs.sampleproject.model.input.ItemUpdateInput;
 import com.obs.sampleproject.repository.ItemRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,10 +36,10 @@ public class ItemService {
 	}
 
 
-	public Item updateItem(ItemUpdateInput itemUpdateInput) throws Exception {
+	public Item updateItem(ItemUpdateInput itemUpdateInput){
 		Item item = getItem(itemUpdateInput.getId());
 		if(item==null) {
-			throw new Exception();
+			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		if(itemUpdateInput.getName() != null) {
 			item.setName(itemUpdateInput.getName());
@@ -51,10 +51,10 @@ public class ItemService {
 	}
 	
 
-	public Item deleteItem(Integer id) throws Exception {
+	public Item deleteItem(Integer id) {
 		Item item = getItem(id);
 		if(item==null) {
-			throw new Exception();
+			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		itemRepository.delete(item);
 		return item;
