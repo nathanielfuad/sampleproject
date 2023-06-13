@@ -36,7 +36,7 @@ public class OrderServiceTest {
 
     @Test
     void whenGetAllOrder_ThenReturnAlLOrder(){
-        Order order = generateMockOrder(1);
+        Order order = generateMockOrder((int) 1L);
         List<Order> listOrder = Collections.singletonList(order);
         when(orderRepository.findAll()).thenReturn(listOrder);
 
@@ -45,24 +45,24 @@ public class OrderServiceTest {
 
     @Test
     void whenGetOrder_ThenReturnOrder(){
-        Order order = generateMockOrder(1);
-        when(orderRepository.findById(1)).thenReturn(Optional.of(order));
+        Order order = generateMockOrder((int) 1L);
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(order));
 
-        assertEquals(order, orderService.getOrder(1));
+        assertEquals(order, orderService.getOrder((int) 1L));
     }
 
     @Test
     void whenSaveOrder_ThenReturnSavedOrder() {
         OrderCreateInput orderCreateInput = new OrderCreateInput();
         orderCreateInput.setOrderNo("O1");
-        orderCreateInput.setItemId(1);
+        orderCreateInput.setItemId((int) 1L);
         orderCreateInput.setQty(5);
 
         Item item = new Item();
-        item.setId(1);
+        item.setId((int) 1L);
         item.setPrice(1000);
         item.setName("test");
-        when(itemService.getItem(1)).thenReturn(item);
+        when(itemService.getItem((int) 1L)).thenReturn(item);
 
         Order mockOrder = new Order();
         mockOrder.setOrderNo(orderCreateInput.getOrderNo());
@@ -76,25 +76,27 @@ public class OrderServiceTest {
     @Test
     void whenUpdateOrder_ThenReturnUpdatedOrder() {
         OrderUpdateInput orderUpdateInput = new OrderUpdateInput();
-        orderUpdateInput.setId(1);
-        orderUpdateInput.setOrderNo("O1");
+        orderUpdateInput.setId((int) 1L);
+        orderUpdateInput.setOrderNo("O2");
         orderUpdateInput.setQty(3);
-        orderUpdateInput.setItemId(1);
+        orderUpdateInput.setItemId((int) 1L);
 
-        Order mockOrder = generateMockOrder(1);
+        Order mockOrder = generateMockOrder((int) 1L);
 
         Item item = new Item();
-        item.setId(1);
+        item.setId((int) 1L);
         item.setPrice(1000);
         item.setName("test");
 
-        when(itemService.getItem(1)).thenReturn(item);
-        when(orderRepository.findById(1)).thenReturn(Optional.of(mockOrder));
+        when(itemService.getItem((int) 1L)).thenReturn(item);
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
         when(orderRepository.save(any())).thenReturn(mockOrder);
 
+        assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+
         Order expectedOrder = new Order();
-        expectedOrder.setId(1);
-        expectedOrder.setOrderNo("O1");
+        expectedOrder.setId((int) 1L);
+        expectedOrder.setOrderNo("O2");
         expectedOrder.setQty(3);
         expectedOrder.setItem(item);
 
@@ -104,12 +106,12 @@ public class OrderServiceTest {
     @Test
     void whenUpdateOrder_AndOrderNotFound_ThenReturnException() {
         OrderUpdateInput orderUpdateInput = new OrderUpdateInput();
-        orderUpdateInput.setId(1);
+        orderUpdateInput.setId((int) 1L);
         orderUpdateInput.setOrderNo("O1");
         orderUpdateInput.setQty(3);
-        orderUpdateInput.setItemId(1);
+        orderUpdateInput.setItemId((int) 1L);
 
-        when(orderRepository.findById(1)).thenReturn(Optional.empty());
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.empty());
 
         assertThrows(GeneralErrorException.class, () -> {
             orderService.updateOrder(orderUpdateInput);
@@ -118,19 +120,101 @@ public class OrderServiceTest {
     }
 
     @Test
-    void whenDeleteOrder_ThenReturnNormal() {
-        Order mockOrder = generateMockOrder(1);
-        when(orderRepository.findById(1)).thenReturn(Optional.of(mockOrder));
+    void whenUpdateOrderWithoutInputOrderNo_ThenUpdateOrderWithoutUpdateTheOrderNo() {
+        OrderUpdateInput orderUpdateInput = new OrderUpdateInput();
+        orderUpdateInput.setId((int) 1L);
+        orderUpdateInput.setQty(3);
+        orderUpdateInput.setItemId((int) 1L);
 
-        assertThat(orderService.deleteOrder(1)).isNotNull();
+        Order mockOrder = generateMockOrder((int) 1L);
+
+        Item item = new Item();
+        item.setId((int) 1L);
+        item.setPrice(1000);
+        item.setName("test");
+
+        when(itemService.getItem((int) 1L)).thenReturn(item);
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
+        when(orderRepository.save(any())).thenReturn(mockOrder);
+
+        assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+
+        Order expectedOrder = new Order();
+        expectedOrder.setId((int) 1L);
+        expectedOrder.setOrderNo("O1");
+        expectedOrder.setQty(3);
+        expectedOrder.setItem(item);
+
+        assertEquals(expectedOrder, orderService.updateOrder(orderUpdateInput));
+    }
+
+    @Test
+    void whenUpdateOrderWithoutInputQty_ThenUpdateOrderWithoutUpdateTheQty() {
+        OrderUpdateInput orderUpdateInput = new OrderUpdateInput();
+        orderUpdateInput.setId((int) 1L);
+        orderUpdateInput.setOrderNo("O2");
+        orderUpdateInput.setItemId((int) 1L);
+
+        Order mockOrder = generateMockOrder((int) 1L);
+
+        Item item = new Item();
+        item.setId((int) 1L);
+        item.setPrice(1000);
+        item.setName("test");
+
+        when(itemService.getItem((int) 1L)).thenReturn(item);
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
+        when(orderRepository.save(any())).thenReturn(mockOrder);
+
+        assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+
+        Order expectedOrder = new Order();
+        expectedOrder.setId((int) 1L);
+        expectedOrder.setOrderNo("O2");
+        expectedOrder.setQty(1);
+        expectedOrder.setItem(item);
+
+        assertEquals(expectedOrder, orderService.updateOrder(orderUpdateInput));
+    }
+
+
+    @Test
+    void whenUpdateOrderWithoutInputItemId_ThenUpdateOrderWithoutUpdateTheItem() {
+        OrderUpdateInput orderUpdateInput = new OrderUpdateInput();
+        orderUpdateInput.setId((int) 1L);
+        orderUpdateInput.setOrderNo("O2");
+        orderUpdateInput.setQty(3);
+
+        Order mockOrder = generateMockOrder((int) 1L);
+
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
+        when(orderRepository.save(any())).thenReturn(mockOrder);
+
+        assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+
+        Order expectedOrder = new Order();
+        expectedOrder.setId((int) 1L);
+        expectedOrder.setOrderNo("O2");
+        expectedOrder.setQty(3);
+        expectedOrder.setItem(new Item());
+
+        assertEquals(expectedOrder, orderService.updateOrder(orderUpdateInput));
+    }
+
+    @Test
+    void whenDeleteOrder_ThenReturnNormal() {
+        Order mockOrder = generateMockOrder((int) 1L);
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
+
+        assertThat(orderService.deleteOrder((int) 1L)).isNotNull();
     }
 
     @Test
     void whenDeleteOrder_AndOrderNotFound_ThenReturnException() {
-        when(orderRepository.findById(1)).thenReturn(Optional.empty());
+        when(orderRepository.findById((int) 1L)).thenReturn(Optional.empty());
 
         assertThrows(GeneralErrorException.class, () -> {
-            orderService.deleteOrder(1);
+            orderService.deleteOrder((int) 1L);
         });
     }
 
