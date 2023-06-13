@@ -1,14 +1,10 @@
 package com.obs.sampleproject.service;
 
 import com.obs.sampleproject.model.entity.Item;
-import com.obs.sampleproject.model.entity.Order;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
 import com.obs.sampleproject.model.input.ItemCreateInput;
 import com.obs.sampleproject.model.input.ItemUpdateInput;
-import com.obs.sampleproject.model.input.OrderCreateInput;
-import com.obs.sampleproject.model.input.OrderUpdateInput;
 import com.obs.sampleproject.repository.ItemRepository;
-import com.obs.sampleproject.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
