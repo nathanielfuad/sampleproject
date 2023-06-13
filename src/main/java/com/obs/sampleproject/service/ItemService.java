@@ -17,8 +17,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ItemService {
-	@Autowired
-	private ItemRepository itemRepository;
+	private final ItemRepository itemRepository;
 	
 	public List<Item> getAllItem(){
 		return itemRepository.findAll();
