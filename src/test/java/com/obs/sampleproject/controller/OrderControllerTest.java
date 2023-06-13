@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -52,9 +53,9 @@ public class OrderControllerTest {
     @Test
     void whenCreateOrder_ThenStatus200() throws Exception {
         OrderCreateInput orderCreateInput = new OrderCreateInput();
-        orderCreateInput.setItemId(1);
-        orderCreateInput.setOrderNo("O1");
-        orderCreateInput.setQty(1);
+        orderCreateInput.setItemId((int) 1L);
+        orderCreateInput.setOrderNo(anyString());
+        orderCreateInput.setQty((int) 1L);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writer().writeValueAsString(orderCreateInput);
@@ -71,9 +72,9 @@ public class OrderControllerTest {
     @Test
     void whenUpdateOrder_ThenStatus200() throws Exception {
         OrderUpdateInput orderUpdateInput = new OrderUpdateInput();
-        orderUpdateInput.setItemId(1);
-        orderUpdateInput.setOrderNo("O1");
-        orderUpdateInput.setQty(1);
+        orderUpdateInput.setItemId((int) 1L);
+        orderUpdateInput.setOrderNo(anyString());
+        orderUpdateInput.setQty((int) 1L);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String body = objectMapper.writer().writeValueAsString(orderUpdateInput);
