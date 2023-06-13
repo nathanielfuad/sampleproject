@@ -1,6 +1,6 @@
 package com.obs.sampleproject.util;
 
-import com.obs.sampleproject.model.entity.Response;
+import com.obs.sampleproject.model.output.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 

@@ -11,6 +11,6 @@ INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O1',6,14);
 INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O3',2,4);
 INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O2',4,2);
 INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O3',5,5);
-INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O1',8,7);
+--INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O1',8,7); commented because there are only 7 items in item table, so it will be constrained because the table relationship
 INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O2',7,2);
 INSERT INTO "order" (ORDER_NO, ITEM_ID, QTY) VALUES ('O3',6,5);

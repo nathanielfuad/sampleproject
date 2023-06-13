@@ -1,11 +1,7 @@
 package com.obs.sampleproject.model.entity;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -17,7 +13,8 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String orderNo;
-	private Integer itemId;
+	@ManyToOne(optional = false)
+	private Item item;
 	private Integer qty;
 
 }

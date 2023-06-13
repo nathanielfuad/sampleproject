@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 	private final OrderRepository orderRepository;
+	private final ItemService itemService;
 	
 	public List<Order> getAllOrder(){
 		return orderRepository.findAll();
@@ -29,7 +30,7 @@ public class OrderService {
 	public Order saveOrder(OrderCreateInput orderCreateInput) {
 		Order order = new Order();
 		order.setOrderNo(orderCreateInput.getOrderNo());
-		order.setItemId(orderCreateInput.getItemId());
+		order.setItem(itemService.getItem(orderCreateInput.getItemId()));
 		order.setQty(orderCreateInput.getQty());
 		return orderRepository.save(order);
 	}
@@ -41,7 +42,7 @@ public class OrderService {
 			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		if(orderUpdateInput.getItemId() != null) {
-			order.setItemId(orderUpdateInput.getItemId());
+			order.setItem(itemService.getItem(orderUpdateInput.getItemId()));
 		}
 		if(orderUpdateInput.getOrderNo() != null) {
 			order.setOrderNo(orderUpdateInput.getOrderNo());
