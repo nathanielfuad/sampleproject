@@ -94,7 +94,22 @@ public class ItemServiceTest {
     }
 
     @Test
-    void whenUpdateItemWithoutNameInput_ThenUpdateItemWithoutUpdateTheName() {
+    void whenUpdateItem_AndItemNotFound_ThenReturnException() {
+        ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
+        itemUpdateInput.setId((int) 1L);
+        itemUpdateInput.setName("testChange");
+        itemUpdateInput.setPrice(2000);
+
+        when(itemRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(GeneralErrorException.class, () -> {
+            itemService.updateItem(itemUpdateInput);
+        });
+
+    }
+
+    @Test
+    void whenUpdateItemWithoutInputName_ThenUpdateItemWithoutUpdateTheName() {
         ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
         itemUpdateInput.setId((int) 1L);
         itemUpdateInput.setPrice(2000);
@@ -115,7 +130,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void whenUpdateItemWithoutPriceInput_ThenUpdateItemWithoutUpdateThePrice() {
+    void whenUpdateItemWithoutInputPrice_ThenUpdateItemWithoutUpdateThePrice() {
         ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
         itemUpdateInput.setId((int) 1L);
         itemUpdateInput.setName("testChange");
@@ -133,21 +148,6 @@ public class ItemServiceTest {
         expectedItem.setName("testChange");
 
         assertEquals(expectedItem, itemService.updateItem(itemUpdateInput));
-    }
-
-    @Test
-    void whenUpdateItem_AndItemNotFound_ThenReturnException() {
-        ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
-        itemUpdateInput.setId((int) 1L);
-        itemUpdateInput.setName("testChange");
-        itemUpdateInput.setPrice(2000);
-
-        when(itemRepository.findById(1)).thenReturn(Optional.empty());
-
-        assertThrows(GeneralErrorException.class, () -> {
-            itemService.updateItem(itemUpdateInput);
-        });
-
     }
 
     @Test
