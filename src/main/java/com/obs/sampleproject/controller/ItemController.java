@@ -1,17 +1,10 @@
 package com.obs.sampleproject.controller;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 import com.obs.sampleproject.util.ResponseUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.obs.sampleproject.constants.ErrorCode;
 import com.obs.sampleproject.model.input.ItemCreateInput;
@@ -43,7 +36,7 @@ public class ItemController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<Object> delete(@PathParam("id") Integer id) {
+	public ResponseEntity<Object> delete(@RequestParam("id") Integer id) {
 		return responseUtil.generate(ErrorCode.SUCCESS, itemService.deleteItem(id));
 	}
 }
