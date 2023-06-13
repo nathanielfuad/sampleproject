@@ -1,9 +1,8 @@
 package com.obs.sampleproject.service;
 
-import com.obs.sampleproject.model.entity.Item;
+import com.obs.sampleproject.dto.ItemDto;
+import com.obs.sampleproject.entity.Item;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
-import com.obs.sampleproject.model.input.ItemCreateInput;
-import com.obs.sampleproject.model.input.ItemUpdateInput;
 import com.obs.sampleproject.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,9 +52,9 @@ public class ItemServiceTest {
 
     @Test
     void whenSaveItem_ThenReturnSavedItem() {
-        ItemCreateInput itemCreateInput = new ItemCreateInput();
-        itemCreateInput.setPrice(1000);
-        itemCreateInput.setName("test");
+        com.obs.sampleproject.dto.ItemDto itemDto = new com.obs.sampleproject.dto.ItemDto();
+        itemDto.setPrice(1000);
+        itemDto.setName("test");
 
         Item mockItem = new Item();
         mockItem.setPrice(1000);
@@ -63,15 +62,14 @@ public class ItemServiceTest {
 
         when(itemRepository.save(mockItem)).thenReturn(mockItem);
 
-        assertThat(itemService.saveItem(itemCreateInput)).isNotNull();
+        assertThat(itemService.saveItem(itemDto)).isNotNull();
     }
 
     @Test
     void whenUpdateItem_ThenReturnUpdatedItem() {
-        ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
-        itemUpdateInput.setId((int) 1L);
-        itemUpdateInput.setName("testChange");
-        itemUpdateInput.setPrice(2000);
+        ItemDto itemDto = new ItemDto();
+        itemDto.setName("testChange");
+        itemDto.setPrice(2000);
 
         Item mockItem = generateMockItem((int) 1L);
 
@@ -85,29 +83,27 @@ public class ItemServiceTest {
         expectedItem.setPrice(2000);
         expectedItem.setName("testChange");
 
-        assertEquals(expectedItem, itemService.updateItem(itemUpdateInput));
+        assertEquals(expectedItem, itemService.updateItem((int) 1L, itemDto));
     }
 
     @Test
     void whenUpdateItem_AndItemNotFound_ThenReturnException() {
-        ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
-        itemUpdateInput.setId((int) 1L);
-        itemUpdateInput.setName("testChange");
-        itemUpdateInput.setPrice(2000);
+        ItemDto itemDto = new ItemDto();
+        itemDto.setName("testChange");
+        itemDto.setPrice(2000);
 
         when(itemRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(GeneralErrorException.class, () -> {
-            itemService.updateItem(itemUpdateInput);
+            itemService.updateItem((int) 1L, itemDto);
         });
 
     }
 
     @Test
     void whenUpdateItemWithoutInputName_ThenUpdateItemWithoutUpdateTheName() {
-        ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
-        itemUpdateInput.setId((int) 1L);
-        itemUpdateInput.setPrice(2000);
+        ItemDto itemDto = new ItemDto();
+        itemDto.setPrice(2000);
 
         Item mockItem = generateMockItem((int) 1L);
 
@@ -121,14 +117,13 @@ public class ItemServiceTest {
         expectedItem.setPrice(2000);
         expectedItem.setName("test");
 
-        assertEquals(expectedItem, itemService.updateItem(itemUpdateInput));
+        assertEquals(expectedItem, itemService.updateItem((int) 1L, itemDto));
     }
 
     @Test
     void whenUpdateItemWithoutInputPrice_ThenUpdateItemWithoutUpdateThePrice() {
-        ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
-        itemUpdateInput.setId((int) 1L);
-        itemUpdateInput.setName("testChange");
+        ItemDto itemDto = new ItemDto();
+        itemDto.setName("testChange");
 
         Item mockItem = generateMockItem((int) 1L);
 
@@ -142,7 +137,7 @@ public class ItemServiceTest {
         expectedItem.setPrice(1000);
         expectedItem.setName("testChange");
 
-        assertEquals(expectedItem, itemService.updateItem(itemUpdateInput));
+        assertEquals(expectedItem, itemService.updateItem((int) 1L, itemDto));
     }
 
     @Test

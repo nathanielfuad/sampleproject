@@ -2,8 +2,7 @@ package com.obs.sampleproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obs.sampleproject.config.ExceptionHandlerConfig;
-import com.obs.sampleproject.model.input.ItemCreateInput;
-import com.obs.sampleproject.model.input.ItemUpdateInput;
+import com.obs.sampleproject.dto.ItemDto;
 import com.obs.sampleproject.repository.ItemRepository;
 import com.obs.sampleproject.repository.OrderRepository;
 import com.obs.sampleproject.service.ItemService;
@@ -47,12 +46,12 @@ public class ItemControllerTest {
 
     @Test
     void whenCreateItem_ThenStatus200() throws Exception {
-        ItemCreateInput itemCreateInput = new ItemCreateInput();
-        itemCreateInput.setName(anyString());
-        itemCreateInput.setPrice((int) 1L);
+        com.obs.sampleproject.dto.ItemDto itemDto = new com.obs.sampleproject.dto.ItemDto();
+        itemDto.setName(anyString());
+        itemDto.setPrice((int) 1L);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writer().writeValueAsString(itemCreateInput);
+        String body = objectMapper.writer().writeValueAsString(itemDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/item")
@@ -65,16 +64,16 @@ public class ItemControllerTest {
 
     @Test
     void whenUpdateItem_ThenStatus200() throws Exception {
-        ItemUpdateInput itemUpdateInput = new ItemUpdateInput();
-        itemUpdateInput.setId((int) 1L);
-        itemUpdateInput.setName(anyString());
-        itemUpdateInput.setPrice((int) 1L);
+        ItemDto itemDto = new ItemDto();
+        itemDto.setName(anyString());
+        itemDto.setPrice((int) 1L);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writer().writeValueAsString(itemUpdateInput);
+        String body = objectMapper.writer().writeValueAsString(itemDto);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.put("/item")
+                                .param("id","1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(body))
                 .andExpect(status().isOk())

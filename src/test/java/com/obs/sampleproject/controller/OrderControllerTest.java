@@ -2,26 +2,19 @@ package com.obs.sampleproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obs.sampleproject.config.ExceptionHandlerConfig;
-import com.obs.sampleproject.model.entity.Order;
-import com.obs.sampleproject.model.input.OrderCreateInput;
-import com.obs.sampleproject.model.input.OrderUpdateInput;
+import com.obs.sampleproject.dto.OrderDto;
 import com.obs.sampleproject.repository.ItemRepository;
 import com.obs.sampleproject.repository.OrderRepository;
 import com.obs.sampleproject.service.OrderService;
 import com.obs.sampleproject.util.ResponseUtil;
-import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,13 +45,13 @@ public class OrderControllerTest {
 
     @Test
     void whenCreateOrder_ThenStatus200() throws Exception {
-        OrderCreateInput orderCreateInput = new OrderCreateInput();
-        orderCreateInput.setItemId((int) 1L);
-        orderCreateInput.setOrderNo(anyString());
-        orderCreateInput.setQty((int) 1L);
+        com.obs.sampleproject.dto.OrderDto orderDto = new com.obs.sampleproject.dto.OrderDto();
+        orderDto.setItemId((int) 1L);
+        orderDto.setOrderNo(anyString());
+        orderDto.setQty((int) 1L);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writer().writeValueAsString(orderCreateInput);
+        String body = objectMapper.writer().writeValueAsString(orderDto);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/order")
@@ -71,16 +64,17 @@ public class OrderControllerTest {
 
     @Test
     void whenUpdateOrder_ThenStatus200() throws Exception {
-        OrderUpdateInput orderUpdateInput = new OrderUpdateInput();
-        orderUpdateInput.setItemId((int) 1L);
-        orderUpdateInput.setOrderNo(anyString());
-        orderUpdateInput.setQty((int) 1L);
+        OrderDto orderDto = new OrderDto();
+        orderDto.setItemId((int) 1L);
+        orderDto.setOrderNo(anyString());
+        orderDto.setQty((int) 1L);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String body = objectMapper.writer().writeValueAsString(orderUpdateInput);
+        String body = objectMapper.writer().writeValueAsString(orderDto);
 
         mockMvc.perform(
                         MockMvcRequestBuilders.put("/order")
+                                .param("id","1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(body))
                 .andExpect(status().isOk())

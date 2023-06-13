@@ -3,12 +3,11 @@ package com.obs.sampleproject.service;
 import java.util.List;
 
 import com.obs.sampleproject.constants.ErrorCode;
+import com.obs.sampleproject.dto.OrderDto;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
 import org.springframework.stereotype.Service;
 
-import com.obs.sampleproject.model.entity.Order;
-import com.obs.sampleproject.model.input.OrderCreateInput;
-import com.obs.sampleproject.model.input.OrderUpdateInput;
+import com.obs.sampleproject.entity.Order;
 import com.obs.sampleproject.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -27,28 +26,28 @@ public class OrderService {
 		return orderRepository.findById(id).orElse(null);
 	}
 	
-	public Order saveOrder(OrderCreateInput orderCreateInput) {
+	public Order saveOrder(com.obs.sampleproject.dto.OrderDto orderDto) {
 		Order order = new Order();
-		order.setOrderNo(orderCreateInput.getOrderNo());
-		order.setItem(itemService.getItem(orderCreateInput.getItemId()));
-		order.setQty(orderCreateInput.getQty());
+		order.setOrderNo(orderDto.getOrderNo());
+		order.setItem(itemService.getItem(orderDto.getItemId()));
+		order.setQty(orderDto.getQty());
 		return orderRepository.save(order);
 	}
 
 
-	public Order updateOrder(OrderUpdateInput orderUpdateInput) {
-		Order order = getOrder(orderUpdateInput.getId());
+	public Order updateOrder(int id, OrderDto orderDto) {
+		Order order = getOrder(id);
 		if(order==null) {
 			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
-		if(orderUpdateInput.getItemId() != null) {
-			order.setItem(itemService.getItem(orderUpdateInput.getItemId()));
+		if(orderDto.getItemId() != null) {
+			order.setItem(itemService.getItem(orderDto.getItemId()));
 		}
-		if(orderUpdateInput.getOrderNo() != null) {
-			order.setOrderNo(orderUpdateInput.getOrderNo());
+		if(orderDto.getOrderNo() != null) {
+			order.setOrderNo(orderDto.getOrderNo());
 		}
-		if(orderUpdateInput.getQty() != null) {
-			order.setQty(orderUpdateInput.getQty());
+		if(orderDto.getQty() != null) {
+			order.setQty(orderDto.getQty());
 		}
 		return orderRepository.save(order);
 	}

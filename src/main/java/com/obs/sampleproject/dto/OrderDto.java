@@ -1,11 +1,11 @@
-package com.obs.sampleproject.model.input;
+package com.obs.sampleproject.dto;
 
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
 @Data
-public class OrderCreateInput {
+public class OrderDto {
 	@NotNull
 	private String orderNo;
 	@NotNull

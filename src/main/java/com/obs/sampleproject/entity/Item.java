@@ -1,4 +1,4 @@
-package com.obs.sampleproject.model.entity;
+package com.obs.sampleproject.entity;
 
 
 import javax.persistence.Entity;
