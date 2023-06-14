@@ -1,12 +1,15 @@
 package com.obs.sampleproject.service;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import com.obs.sampleproject.constants.ErrorCode;
 import com.obs.sampleproject.dto.OrderDto;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
 import com.obs.sampleproject.repository.ItemRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.modelmapper.TypeToken;
 
 import com.obs.sampleproject.entity.Order;
 import com.obs.sampleproject.repository.OrderRepository;
@@ -18,26 +21,33 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
 	private final OrderRepository orderRepository;
 	private final ItemRepository itemRepository;
+	private final ModelMapper modelMapper;
 	
-	public List<Order> getAllOrder(){
-		return orderRepository.findAll();
+	public List<OrderDto> getAllOrder(){
+		Type orderDtoListType = new TypeToken<List<OrderDto>>(){}.getType();
+		return modelMapper.map(orderRepository.findAll(), orderDtoListType);
 	}
 	
-	public Order getOrder(Integer id) {
-		return orderRepository.findById(id).orElse(null);
+	public OrderDto getOrder(Integer id) {
+		Order order = orderRepository.findById(id).orElse(null);
+		if(order == null) return null;
+		return modelMapper.map(order, OrderDto.class);
 	}
 	
-	public Order saveOrder(com.obs.sampleproject.dto.OrderDto orderDto) {
+	public OrderDto saveOrder(OrderDto orderDto) {
 		Order order = new Order();
 		order.setOrderNo(orderDto.getOrderNo());
 		order.setItem(itemRepository.findById(orderDto.getItemId()).orElse(null));
 		order.setQty(orderDto.getQty());
-		return orderRepository.save(order);
+		order = orderRepository.save(order);
+
+		orderDto.setId(order.getId());
+		return orderDto;
 	}
 
 
-	public Order updateOrder(int id, OrderDto orderDto) {
-		Order order = getOrder(id);
+	public OrderDto updateOrder(int id, OrderDto orderDto) {
+		Order order = orderRepository.findById(id).orElse(null);
 		if(order==null) {
 			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
@@ -50,16 +60,19 @@ public class OrderService {
 		if(orderDto.getQty() != null) {
 			order.setQty(orderDto.getQty());
 		}
-		return orderRepository.save(order);
+
+		orderRepository.save(order);
+
+		return modelMapper.map(order, OrderDto.class);
 	}
 	
 
-	public Order deleteOrder(Integer id) {
-		Order order = getOrder(id);
+	public OrderDto deleteOrder(Integer id) {
+		Order order = orderRepository.findById(id).orElse(null);
 		if(order==null) {
 			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		orderRepository.delete(order);
-		return order;
+		return modelMapper.map(order, OrderDto.class);
 	}
 }

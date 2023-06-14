@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,19 +29,25 @@ public class OrderServiceTest {
     @Mock
     private ItemRepository itemRepository;
     private OrderService orderService;
+    private ModelMapper modelMapper;
 
     @BeforeEach
     void initTestCase() {
-        orderService = new OrderService(orderRepository,itemRepository);
+        modelMapper = new ModelMapper();
+        orderService = new OrderService(orderRepository,itemRepository, modelMapper);
     }
 
     @Test
     void whenGetAllOrder_ThenReturnAlLOrder(){
         Order order = generateMockOrder((int) 1L);
-        List<Order> listOrder = Collections.singletonList(order);
-        when(orderRepository.findAll()).thenReturn(listOrder);
+        List<Order> orderList = Collections.singletonList(order);
+        when(orderRepository.findAll()).thenReturn(orderList);
 
-        assertEquals(listOrder,orderService.getAllOrder());
+        List<OrderDto> orderDtoList = orderService.getAllOrder();
+
+        assertThat(orderDtoList).isNotNull();
+        assertThat(orderDtoList.size()).isEqualTo(orderList.size());
+        assertThat(orderDtoList.get(0).getId()).isEqualTo(order.getId());
     }
 
     @Test
@@ -48,12 +55,12 @@ public class OrderServiceTest {
         Order order = generateMockOrder((int) 1L);
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(order));
 
-        assertEquals(order, orderService.getOrder((int) 1L));
+        assertThat(orderService.getOrder((int) 1L)).isNotNull();
     }
 
     @Test
     void whenSaveOrder_ThenReturnSavedOrder() {
-        OrderDto orderDto = new com.obs.sampleproject.dto.OrderDto();
+        OrderDto orderDto = new OrderDto();
         orderDto.setOrderNo("O1");
         orderDto.setItemId((int) 1L);
         orderDto.setQty(5);
@@ -65,12 +72,15 @@ public class OrderServiceTest {
         when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
 
         Order mockOrder = new Order();
+        mockOrder.setId((int) 1L);
         mockOrder.setOrderNo(orderDto.getOrderNo());
         mockOrder.setItem(itemRepository.findById(orderDto.getItemId()).orElse(null));
         mockOrder.setQty(orderDto.getQty());
         when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
 
-        assertThat(orderService.saveOrder(orderDto)).isNotNull();
+        OrderDto orderDtoResult = orderService.saveOrder(orderDto);
+        assertThat(orderDtoResult).isNotNull();
+        assertThat(orderDtoResult.getId()).isEqualTo(mockOrder.getId());
     }
 
     @Test
@@ -89,17 +99,15 @@ public class OrderServiceTest {
 
         when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
-        when(orderRepository.save(any())).thenReturn(mockOrder);
-
         assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
 
-        Order expectedOrder = new Order();
-        expectedOrder.setId((int) 1L);
-        expectedOrder.setOrderNo("O2");
-        expectedOrder.setQty(3);
-        expectedOrder.setItem(item);
-
-        assertEquals(expectedOrder, orderService.updateOrder((int) 1L, orderDto));
+        OrderDto orderDtoResult = orderService.updateOrder((int) 1L, orderDto);
+        assertThat(orderDtoResult).isNotNull();
+        assertThat(orderDtoResult.getId()).isEqualTo((int) 1L);
+        assertThat(orderDtoResult.getItemId()).isEqualTo(orderDto.getItemId());
+        assertThat(orderDtoResult.getOrderNo()).isEqualTo(orderDto.getOrderNo());
+        assertThat(orderDtoResult.getQty()).isEqualTo(orderDto.getQty());
     }
 
     @Test
@@ -132,17 +140,15 @@ public class OrderServiceTest {
 
         when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
-        when(orderRepository.save(any())).thenReturn(mockOrder);
-
         assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
 
-        Order expectedOrder = new Order();
-        expectedOrder.setId((int) 1L);
-        expectedOrder.setOrderNo("O1");
-        expectedOrder.setQty(3);
-        expectedOrder.setItem(item);
-
-        assertEquals(expectedOrder, orderService.updateOrder((int) 1L, orderDto));
+        OrderDto orderDtoResult = orderService.updateOrder((int) 1L, orderDto);
+        assertThat(orderDtoResult).isNotNull();
+        assertThat(orderDtoResult.getId()).isEqualTo((int) 1L);
+        assertThat(orderDtoResult.getItemId()).isEqualTo(orderDto.getItemId());
+        assertThat(orderDtoResult.getOrderNo()).isEqualTo(generateMockOrder((int) 1L).getOrderNo());
+        assertThat(orderDtoResult.getQty()).isEqualTo(orderDto.getQty());
     }
 
     @Test
@@ -160,17 +166,15 @@ public class OrderServiceTest {
 
         when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
-        when(orderRepository.save(any())).thenReturn(mockOrder);
-
         assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
 
-        Order expectedOrder = new Order();
-        expectedOrder.setId((int) 1L);
-        expectedOrder.setOrderNo("O2");
-        expectedOrder.setQty(1);
-        expectedOrder.setItem(item);
-
-        assertEquals(expectedOrder, orderService.updateOrder((int) 1L, orderDto));
+        OrderDto orderDtoResult = orderService.updateOrder((int) 1L, orderDto);
+        assertThat(orderDtoResult).isNotNull();
+        assertThat(orderDtoResult.getId()).isEqualTo((int) 1L);
+        assertThat(orderDtoResult.getItemId()).isEqualTo(orderDto.getItemId());
+        assertThat(orderDtoResult.getOrderNo()).isEqualTo(orderDto.getOrderNo());
+        assertThat(orderDtoResult.getQty()).isEqualTo(generateMockOrder((int) 1L).getQty());
     }
 
 
@@ -182,18 +186,21 @@ public class OrderServiceTest {
 
         Order mockOrder = generateMockOrder((int) 1L);
 
+        Item item = new Item();
+        item.setId((int) 1L);
+        item.setPrice(1000);
+        item.setName("test");
+
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
-        when(orderRepository.save(any())).thenReturn(mockOrder);
-
         assertEquals(Optional.of(mockOrder), orderRepository.findById((int) 1L));
+        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
 
-        Order expectedOrder = new Order();
-        expectedOrder.setId((int) 1L);
-        expectedOrder.setOrderNo("O2");
-        expectedOrder.setQty(3);
-        expectedOrder.setItem(new Item());
-
-        assertEquals(expectedOrder, orderService.updateOrder((int) 1L, orderDto));
+        OrderDto orderDtoResult = orderService.updateOrder((int) 1L, orderDto);
+        assertThat(orderDtoResult).isNotNull();
+        assertThat(orderDtoResult.getId()).isEqualTo((int) 1L);
+        assertThat(orderDtoResult.getItemId()).isEqualTo(generateMockOrder((int) 1L).getItem().getId());
+        assertThat(orderDtoResult.getOrderNo()).isEqualTo(orderDto.getOrderNo());
+        assertThat(orderDtoResult.getQty()).isEqualTo(orderDto.getQty());
     }
 
     @Test
