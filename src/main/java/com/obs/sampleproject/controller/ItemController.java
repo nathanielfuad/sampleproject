@@ -38,4 +38,9 @@ public class ItemController {
 	public ResponseEntity<Object> delete(@RequestParam("id") Integer id) {
 		return responseUtil.generate(ErrorCode.SUCCESS, itemService.deleteItem(id));
 	}
+
+	@GetMapping("/details")
+	public ResponseEntity<Object> getAllWithOrderDetails(){
+		return responseUtil.generate(ErrorCode.SUCCESS, itemService.getAllItemWithOrderDetails());
+	}
 }

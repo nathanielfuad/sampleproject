@@ -1,10 +1,14 @@
 package com.obs.sampleproject.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.obs.sampleproject.constants.ErrorCode;
+import com.obs.sampleproject.dto.ItemDetailsDto;
 import com.obs.sampleproject.dto.ItemDto;
+import com.obs.sampleproject.entity.ItemOrderedDetailsInterface;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
+import com.obs.sampleproject.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import com.obs.sampleproject.entity.Item;
@@ -16,7 +20,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ItemService {
 	private final ItemRepository itemRepository;
-	
+	private final OrderRepository orderRepository;
+
 	public List<Item> getAllItem(){
 		return itemRepository.findAll();
 	}
@@ -55,5 +60,33 @@ public class ItemService {
 		}
 		itemRepository.delete(item);
 		return item;
+	}
+
+	public List<ItemDetailsDto> getAllItemWithOrderDetails() {
+		List<ItemDetailsDto> itemDetailsDtoList = new ArrayList<>();
+		List<ItemOrderedDetailsInterface> itemOrderedDetailsList = orderRepository.findSumQtyOfEachItem();
+		List<Item> itemList = getAllItem();
+
+		for(Item item : itemList){
+			ItemDetailsDto itemDetailsDto = new ItemDetailsDto();
+			itemDetailsDto.setId(item.getId());
+			itemDetailsDto.setName(item.getName());
+			itemDetailsDto.setPrice(item.getPrice());
+			for (ItemOrderedDetailsInterface itemOrderDetails: itemOrderedDetailsList) {
+				if(itemOrderDetails.getItemId().equals(item.getId())) {
+					ItemDetailsDto.Details details = new ItemDetailsDto.Details();
+					details.setNumberOfOrders(itemOrderDetails.getNumberOfOrders());
+					details.setTotalQtyOrdered(itemOrderDetails.getTotalQtyOrdered());
+					itemDetailsDto.setDetails(details);
+					itemOrderedDetailsList.remove(itemOrderDetails);
+					break;
+				}
+			}
+
+			itemDetailsDtoList.add(itemDetailsDto);
+		}
+
+
+		return itemDetailsDtoList;
 	}
 }

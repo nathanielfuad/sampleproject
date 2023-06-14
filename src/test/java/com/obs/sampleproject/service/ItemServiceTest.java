@@ -4,11 +4,14 @@ import com.obs.sampleproject.dto.ItemDto;
 import com.obs.sampleproject.entity.Item;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
 import com.obs.sampleproject.repository.ItemRepository;
+import com.obs.sampleproject.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,10 +30,12 @@ public class ItemServiceTest {
     @Mock
     private OrderService orderService;
     private ItemService itemService;
+    @Mock
+    OrderRepository orderRepository;
 
     @BeforeEach
     void initTestCase() {
-        itemService = new ItemService(itemRepository);
+        itemService = new ItemService(itemRepository, orderRepository);
     }
 
     @Test
@@ -52,7 +57,7 @@ public class ItemServiceTest {
 
     @Test
     void whenSaveItem_ThenReturnSavedItem() {
-        com.obs.sampleproject.dto.ItemDto itemDto = new com.obs.sampleproject.dto.ItemDto();
+        ItemDto itemDto = new ItemDto();
         itemDto.setPrice(1000);
         itemDto.setName("test");
 

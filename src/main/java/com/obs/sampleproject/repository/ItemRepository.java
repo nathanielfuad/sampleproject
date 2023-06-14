@@ -6,6 +6,4 @@ import com.obs.sampleproject.entity.Item;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer>{
-
-
 }
