@@ -1,9 +1,11 @@
 package com.obs.sampleproject.model.output;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Response<T> {
 	private String errorCode;

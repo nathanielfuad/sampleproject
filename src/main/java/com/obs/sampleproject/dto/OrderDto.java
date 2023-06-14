@@ -2,9 +2,11 @@ package com.obs.sampleproject.dto;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class OrderDto {
 	@NotNull
 	private String orderNo;
