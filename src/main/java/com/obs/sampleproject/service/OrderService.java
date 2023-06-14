@@ -5,6 +5,7 @@ import java.util.List;
 import com.obs.sampleproject.constants.ErrorCode;
 import com.obs.sampleproject.dto.OrderDto;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
+import com.obs.sampleproject.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import com.obs.sampleproject.entity.Order;
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 	private final OrderRepository orderRepository;
-	private final ItemService itemService;
+	private final ItemRepository itemRepository;
 	
 	public List<Order> getAllOrder(){
 		return orderRepository.findAll();
@@ -29,7 +30,7 @@ public class OrderService {
 	public Order saveOrder(com.obs.sampleproject.dto.OrderDto orderDto) {
 		Order order = new Order();
 		order.setOrderNo(orderDto.getOrderNo());
-		order.setItem(itemService.getItem(orderDto.getItemId()));
+		order.setItem(itemRepository.findById(orderDto.getItemId()).orElse(null));
 		order.setQty(orderDto.getQty());
 		return orderRepository.save(order);
 	}
@@ -41,7 +42,7 @@ public class OrderService {
 			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		if(orderDto.getItemId() != null) {
-			order.setItem(itemService.getItem(orderDto.getItemId()));
+			order.setItem(itemRepository.findById(orderDto.getItemId()).orElse(null));
 		}
 		if(orderDto.getOrderNo() != null) {
 			order.setOrderNo(orderDto.getOrderNo());

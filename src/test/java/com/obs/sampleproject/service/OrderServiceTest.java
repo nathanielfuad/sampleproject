@@ -4,6 +4,7 @@ import com.obs.sampleproject.dto.OrderDto;
 import com.obs.sampleproject.entity.Item;
 import com.obs.sampleproject.entity.Order;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
+import com.obs.sampleproject.repository.ItemRepository;
 import com.obs.sampleproject.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,12 +26,12 @@ public class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
     @Mock
-    private ItemService itemService;
+    private ItemRepository itemRepository;
     private OrderService orderService;
 
     @BeforeEach
     void initTestCase() {
-        orderService = new OrderService(orderRepository,itemService);
+        orderService = new OrderService(orderRepository,itemRepository);
     }
 
     @Test
@@ -52,7 +53,7 @@ public class OrderServiceTest {
 
     @Test
     void whenSaveOrder_ThenReturnSavedOrder() {
-        com.obs.sampleproject.dto.OrderDto orderDto = new com.obs.sampleproject.dto.OrderDto();
+        OrderDto orderDto = new com.obs.sampleproject.dto.OrderDto();
         orderDto.setOrderNo("O1");
         orderDto.setItemId((int) 1L);
         orderDto.setQty(5);
@@ -61,13 +62,13 @@ public class OrderServiceTest {
         item.setId((int) 1L);
         item.setPrice(1000);
         item.setName("test");
-        when(itemService.getItem((int) 1L)).thenReturn(item);
+        when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
 
         Order mockOrder = new Order();
         mockOrder.setOrderNo(orderDto.getOrderNo());
-        mockOrder.setItem(itemService.getItem(orderDto.getItemId()));
+        mockOrder.setItem(itemRepository.findById(orderDto.getItemId()).orElse(null));
         mockOrder.setQty(orderDto.getQty());
-        when(orderRepository.save(mockOrder)).thenReturn(mockOrder);
+        when(orderRepository.save(any(Order.class))).thenReturn(mockOrder);
 
         assertThat(orderService.saveOrder(orderDto)).isNotNull();
     }
@@ -86,7 +87,7 @@ public class OrderServiceTest {
         item.setPrice(1000);
         item.setName("test");
 
-        when(itemService.getItem((int) 1L)).thenReturn(item);
+        when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
         when(orderRepository.save(any())).thenReturn(mockOrder);
 
@@ -129,7 +130,7 @@ public class OrderServiceTest {
         item.setPrice(1000);
         item.setName("test");
 
-        when(itemService.getItem((int) 1L)).thenReturn(item);
+        when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
         when(orderRepository.save(any())).thenReturn(mockOrder);
 
@@ -157,7 +158,7 @@ public class OrderServiceTest {
         item.setPrice(1000);
         item.setName("test");
 
-        when(itemService.getItem((int) 1L)).thenReturn(item);
+        when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
         when(orderRepository.findById((int) 1L)).thenReturn(Optional.of(mockOrder));
         when(orderRepository.save(any())).thenReturn(mockOrder);
 

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,15 +26,15 @@ import static org.mockito.Mockito.when;
 public class ItemServiceTest {
     @Mock
     private ItemRepository itemRepository;
-    @Mock
-    private OrderService orderService;
     private ItemService itemService;
     @Mock
     OrderRepository orderRepository;
+    private ModelMapper modelMapper;
 
     @BeforeEach
     void initTestCase() {
-        itemService = new ItemService(itemRepository, orderRepository);
+        modelMapper = new ModelMapper();
+        itemService = new ItemService(itemRepository, orderRepository, modelMapper);
     }
 
     @Test
@@ -44,7 +43,10 @@ public class ItemServiceTest {
         List<Item> itemList = Collections.singletonList(item);
         when(itemRepository.findAll()).thenReturn(itemList);
 
-        assertEquals(itemList,itemService.getAllItem());
+        List<ItemDto> itemDtoList = itemService.getAllItem();
+        assertThat(itemDtoList).isNotNull();
+        assertThat(itemDtoList.size()).isEqualTo(itemList.size());
+        assertThat(itemDtoList.get(0).getId()).isEqualTo(item.getId());
     }
 
     @Test
@@ -52,7 +54,7 @@ public class ItemServiceTest {
         Item item = generateMockItem((int) 1L);
         when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(item));
 
-        assertEquals(item, itemService.getItem((int) 1L));
+        assertThat(itemService.getItem((int) 1L)).isNotNull();
     }
 
     @Test
@@ -62,12 +64,15 @@ public class ItemServiceTest {
         itemDto.setName("test");
 
         Item mockItem = new Item();
+        mockItem.setId((int) 1L);
         mockItem.setPrice(1000);
         mockItem.setName("test");
 
-        when(itemRepository.save(mockItem)).thenReturn(mockItem);
+        when(itemRepository.save(any(Item.class))).thenReturn(mockItem);
 
-        assertThat(itemService.saveItem(itemDto)).isNotNull();
+        ItemDto itemDtoResult = itemService.saveItem(itemDto);
+        assertThat(itemDtoResult.getId()).isEqualTo((int) 1L);
+        assertThat(itemDtoResult).isNotNull();
     }
 
     @Test
@@ -77,18 +82,25 @@ public class ItemServiceTest {
         itemDto.setPrice(2000);
 
         Item mockItem = generateMockItem((int) 1L);
-
-        when(itemRepository.findById(1)).thenReturn(Optional.of(mockItem));
-        when(itemRepository.save(any())).thenReturn(mockItem);
-
+        when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(mockItem));
         assertEquals(Optional.of(mockItem), itemRepository.findById((int) 1L));
 
-        Item expectedItem = new Item();
-        expectedItem.setId((int) 1L);
-        expectedItem.setPrice(2000);
-        expectedItem.setName("testChange");
+        Item updatedItem = new Item();
+        updatedItem.setId(mockItem.getId());
+        updatedItem.setPrice(itemDto.getPrice());
+        updatedItem.setName(itemDto.getName());
+        when(itemRepository.save(any(Item.class))).thenReturn(updatedItem);
 
-        assertEquals(expectedItem, itemService.updateItem((int) 1L, itemDto));
+        ItemDto expectedItemDto = new ItemDto();
+        expectedItemDto.setId(updatedItem.getId());
+        expectedItemDto.setPrice(itemDto.getPrice());
+        expectedItemDto.setName(itemDto.getName());
+
+        ItemDto itemDtoResult = itemService.updateItem((int) 1L, itemDto);
+        assertThat(itemDtoResult).isNotNull();
+        assertThat(itemDtoResult.getId()).isEqualTo(updatedItem.getId());
+        assertThat(itemDtoResult.getPrice()).isEqualTo(updatedItem.getPrice());
+        assertThat(itemDtoResult.getName()).isEqualTo(updatedItem.getName());
     }
 
     @Test
@@ -111,18 +123,21 @@ public class ItemServiceTest {
         itemDto.setPrice(2000);
 
         Item mockItem = generateMockItem((int) 1L);
-
-        when(itemRepository.findById(1)).thenReturn(Optional.of(mockItem));
-        when(itemRepository.save(any())).thenReturn(mockItem);
-
+        when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(mockItem));
         assertEquals(Optional.of(mockItem), itemRepository.findById((int) 1L));
 
-        Item expectedItem = new Item();
-        expectedItem.setId((int) 1L);
-        expectedItem.setPrice(2000);
-        expectedItem.setName("test");
+        Item updatedItem = new Item();
+        updatedItem.setId(mockItem.getId());
+        updatedItem.setPrice(itemDto.getPrice());
+        updatedItem.setName(mockItem.getName());
+        when(itemRepository.save(any(Item.class))).thenReturn(updatedItem);
 
-        assertEquals(expectedItem, itemService.updateItem((int) 1L, itemDto));
+        ItemDto itemDtoResult = itemService.updateItem((int) 1L, itemDto);
+
+        assertThat(itemDtoResult).isNotNull();
+        assertThat(itemDtoResult.getId()).isEqualTo(updatedItem.getId());
+        assertThat(itemDtoResult.getPrice()).isEqualTo(updatedItem.getPrice());
+        assertThat(itemDtoResult.getName()).isEqualTo(updatedItem.getName());
     }
 
     @Test
@@ -131,18 +146,21 @@ public class ItemServiceTest {
         itemDto.setName("testChange");
 
         Item mockItem = generateMockItem((int) 1L);
-
-        when(itemRepository.findById(1)).thenReturn(Optional.of(mockItem));
-        when(itemRepository.save(any())).thenReturn(mockItem);
-
+        when(itemRepository.findById((int) 1L)).thenReturn(Optional.of(mockItem));
         assertEquals(Optional.of(mockItem), itemRepository.findById((int) 1L));
 
-        Item expectedItem = new Item();
-        expectedItem.setId((int) 1L);
-        expectedItem.setPrice(1000);
-        expectedItem.setName("testChange");
+        Item updatedItem = new Item();
+        updatedItem.setId(mockItem.getId());
+        updatedItem.setPrice(mockItem.getPrice());
+        updatedItem.setName(itemDto.getName());
+        when(itemRepository.save(any(Item.class))).thenReturn(updatedItem);
 
-        assertEquals(expectedItem, itemService.updateItem((int) 1L, itemDto));
+        ItemDto itemDtoResult = itemService.updateItem((int) 1L, itemDto);
+
+        assertThat(itemDtoResult).isNotNull();
+        assertThat(itemDtoResult.getId()).isEqualTo(updatedItem.getId());
+        assertThat(itemDtoResult.getPrice()).isEqualTo(updatedItem.getPrice());
+        assertThat(itemDtoResult.getName()).isEqualTo(updatedItem.getName());
     }
 
     @Test

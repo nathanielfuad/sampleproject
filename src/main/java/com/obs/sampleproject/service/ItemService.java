@@ -9,37 +9,48 @@ import com.obs.sampleproject.dto.ItemDto;
 import com.obs.sampleproject.entity.ItemOrderedDetailsInterface;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
 import com.obs.sampleproject.repository.OrderRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.obs.sampleproject.entity.Item;
 import com.obs.sampleproject.repository.ItemRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.TypeToken;
+import java.lang.reflect.Type;
+
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
 	private final ItemRepository itemRepository;
 	private final OrderRepository orderRepository;
+	private final ModelMapper modelMapper;
 
-	public List<Item> getAllItem(){
-		return itemRepository.findAll();
+	public List<ItemDto> getAllItem(){
+		Type listItemDtoType = new TypeToken<List<ItemDto>>(){}.getType();
+		return modelMapper.map(itemRepository.findAll(), listItemDtoType);
 	}
 	
-	public Item getItem(Integer id) {
-		return itemRepository.findById(id).orElse(null);
+	public ItemDto getItem(Integer id) {
+		Item item = itemRepository.findById(id).orElse(null);
+		if(item == null) return null;
+		return modelMapper.map(item, ItemDto.class);
 	}
 	
-	public Item saveItem(ItemDto itemDto) {
+	public ItemDto saveItem(ItemDto itemDto) {
 		Item item = new Item();
 		item.setName(itemDto.getName());
 		item.setPrice(itemDto.getPrice());
-		return itemRepository.save(item);
+		item = itemRepository.save(item);
+
+		itemDto.setId(item.getId());
+		return itemDto;
 	}
 
 
-	public Item updateItem(int id, ItemDto itemDto){
-		Item item = getItem(id);
+	public ItemDto updateItem(int id, ItemDto itemDto){
+		Item item = itemRepository.findById(id).orElse(null);
 		if(item==null) {
 			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
@@ -49,23 +60,26 @@ public class ItemService {
 		if(itemDto.getPrice() != null) {
 			item.setPrice(itemDto.getPrice());
 		}
-		return itemRepository.save(item);
+
+		itemRepository.save(item);
+
+		return modelMapper.map(item, ItemDto.class);
 	}
 	
 
-	public Item deleteItem(Integer id) {
-		Item item = getItem(id);
+	public ItemDto deleteItem(Integer id) {
+		Item item = itemRepository.findById(id).orElse(null);
 		if(item==null) {
 			throw new GeneralErrorException(ErrorCode.NOT_FOUND);
 		}
 		itemRepository.delete(item);
-		return item;
+		return modelMapper.map(item, ItemDto.class);
 	}
 
 	public List<ItemDetailsDto> getAllItemWithOrderDetails() {
 		List<ItemDetailsDto> itemDetailsDtoList = new ArrayList<>();
 		List<ItemOrderedDetailsInterface> itemOrderedDetailsList = orderRepository.findSumQtyOfEachItem();
-		List<Item> itemList = getAllItem();
+		List<Item> itemList = itemRepository.findAll();
 
 		for(Item item : itemList){
 			ItemDetailsDto itemDetailsDto = new ItemDetailsDto();
@@ -85,7 +99,6 @@ public class ItemService {
 
 			itemDetailsDtoList.add(itemDetailsDto);
 		}
-
 
 		return itemDetailsDtoList;
 	}
