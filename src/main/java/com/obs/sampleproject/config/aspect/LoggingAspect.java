@@ -2,7 +2,6 @@ package com.obs.sampleproject.config.aspect;
 
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -10,6 +9,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
@@ -31,10 +31,10 @@ public class LoggingAspect {
         final var className = joinPoint.getTarget().getClass().getName();
         final var methodName = joinPoint.getSignature().getName();
 
-        log.info("New request to {}#{}()", className, methodName);
-        log.info("Arguments: ");
+        log.debug("New request to {}#{}()", className, methodName);
+        log.debug("Arguments: ");
         Arrays.stream(joinPoint.getArgs())
-                .forEach(arg -> log.info(gson.toJson(arg)));
+                .forEach(arg -> log.debug(gson.toJson(arg)));
     }
 
     @AfterReturning(
@@ -45,14 +45,15 @@ public class LoggingAspect {
         final var className = joinPoint.getTarget().getClass().getName();
         final var methodName = joinPoint.getSignature().getName();
 
-        log.info("Generated response from {}#{}(): {}", className, methodName, gson.toJson(response));
+        log.debug("Generated response from {}#{}(): {}", className, methodName, gson.toJson(response));
+        MDC.clear();
     }
 
     @Before("scopeService()")
     public void serviceStart(JoinPoint joinPoint){
         final var className = joinPoint.getTarget().getClass().getName();
         final var methodName = joinPoint.getSignature().getName();
-        log.info("Start service {}#{}()", className, methodName);
+        log.debug("Start service {}#{}()", className, methodName);
     }
 
     @AfterReturning(
@@ -63,7 +64,7 @@ public class LoggingAspect {
         final var className = joinPoint.getTarget().getClass().getName();
         final var methodName = joinPoint.getSignature().getName();
 
-        log.info("End service {}#{}()", className, methodName);
-        log.info("Returned value: {}", gson.toJson(response));
+        log.debug("End service {}#{}()", className, methodName);
+        log.debug("Returned value: {}", gson.toJson(response));
     }
 }
