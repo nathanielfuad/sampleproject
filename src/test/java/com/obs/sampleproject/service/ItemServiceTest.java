@@ -1,7 +1,9 @@
 package com.obs.sampleproject.service;
 
+import com.obs.sampleproject.dto.ItemDetailsDto;
 import com.obs.sampleproject.dto.ItemDto;
 import com.obs.sampleproject.entity.Item;
+import com.obs.sampleproject.entity.ItemOrderedDetailsInterface;
 import com.obs.sampleproject.model.exception.GeneralErrorException;
 import com.obs.sampleproject.repository.ItemRepository;
 import com.obs.sampleproject.repository.OrderRepository;
@@ -12,9 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -156,6 +156,42 @@ public class ItemServiceTest {
         assertThrows(GeneralErrorException.class, () -> {
             itemService.deleteItem(1);
         });
+    }
+
+    @Test
+    void whenGetAllItemDetails_ThenReturnAlLItemWithOrderDetails(){
+        List<ItemOrderedDetailsInterface> mockItemOrderedDetailsInterfaceList = Collections.singletonList(generateMockItemOrderedDetailsInterface((int) 1L));
+        List<Item> mockItemList = Collections.singletonList(generateMockItem((int) 1L));
+
+        when(orderRepository.findSumQtyOfEachItem()).thenReturn(new ArrayList<>(mockItemOrderedDetailsInterfaceList));
+        when(itemRepository.findAll()).thenReturn(mockItemList);
+
+        List<ItemDetailsDto> itemDetailsDtoList = itemService.getAllItemWithOrderDetails();
+
+        assertThat(itemDetailsDtoList).isNotNull();
+        assertThat(itemDetailsDtoList.get(0).getId()).isEqualTo(mockItemList.get(0).getId());
+        assertThat(itemDetailsDtoList.get(0).getDetails()).isNotNull();
+        assertThat(itemDetailsDtoList.get(0).getDetails().getNumberOfOrders()).isEqualTo(mockItemOrderedDetailsInterfaceList.get(0).getNumberOfOrders());
+        assertThat(itemDetailsDtoList.get(0).getDetails().getTotalQtyOrdered()).isEqualTo(mockItemOrderedDetailsInterfaceList.get(0).getTotalQtyOrdered());
+    }
+
+    ItemOrderedDetailsInterface generateMockItemOrderedDetailsInterface(int itemId) {
+        return new ItemOrderedDetailsInterface() {
+            @Override
+            public Integer getItemId() {
+                return itemId;
+            }
+
+            @Override
+            public Long getNumberOfOrders() {
+                return 10L;
+            }
+
+            @Override
+            public Long getTotalQtyOrdered() {
+                return 20L;
+            }
+        };
     }
 
     Item generateMockItem(int id){

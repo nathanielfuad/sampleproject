@@ -90,4 +90,13 @@ public class ItemControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
     }
+
+
+    @Test
+    void whenGetItemDetails_ThenStatus200() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/item/details"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
 }
